@@ -88,4 +88,5 @@ Change `--accent` to any color to retheme the whole site instantly.
 
 ## License
 
-Feel free to use this as inspiration for your own portfolio. Built with passion and lots of coffee.
+Feel free to use this as inspiration for your own portfolio. Built with passion and lots of Tea
+.
