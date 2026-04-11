@@ -176,7 +176,7 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 1.
   .nav-cta { font-size: 10px; padding: 0.45rem 1rem; }
 
   /* hero */
-  .hero { padding: 0 1.5rem 4rem; min-height: 100svh; }
+  .hero { padding: 6rem 1.5rem 4rem; min-height: 100svh; justify-content: center; }
   .hero-side { display: none; }
   .hero-name { font-size: clamp(44px, 12vw, 80px); }
   .hero-bottom { flex-direction: column; align-items: flex-start; gap: 2rem; }
