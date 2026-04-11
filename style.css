@@ -211,7 +211,7 @@ footer { background: var(--bg); border-top: 1px solid var(--border); padding: 1.
   .nav-cta { display: none; }
 
   /* hero */
-  .hero { padding: 0 1.25rem 3.5rem; }
+  .hero { padding: 5.5rem 1.25rem 3.5rem; justify-content: center; }
   .hero-status { font-size: 9px; letter-spacing: 0.12em; }
   .hero-name { font-size: clamp(40px, 14vw, 64px); line-height: 0.92; }
   .hero-tagline { font-size: 11px; line-height: 1.9; }
