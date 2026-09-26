@@ -1,91 +1,49 @@
-# Midhun Sujith Nair — Portfolio Website
+# Midhun Sujith Nair — Portfolio
 
-A personal portfolio website built with pure HTML, CSS, and JavaScript.
+React + TypeScript + Vite. Warm charcoal + brass amber identity, Lenis
+smooth scrolling, spring-physics motion throughout.
 
-## Project Structure
+## Run
 
-```
-portfolio/
-├── index.html      # Main HTML structure
-├── style.css       # All styles and animations
-├── main.js         # JavaScript interactions
-└── README.md       # This file
-```
-
-## Features
-
-- Custom animated cursor with lagging ring effect
-- Smooth scroll reveal animations
-- Animated skill progress bars
-- Scrolling tech stack ticker
-- Sticky navbar on scroll
-- Working contact form via Formspree
-- Fully responsive design
-
-## Tech Stack
-
-- HTML5
-- CSS3 (Flexbox, Grid, CSS Variables, Keyframe Animations)
-- Vanilla JavaScript (IntersectionObserver, requestAnimationFrame)
-- Google Fonts (Syne + DM Mono)
-- Formspree (contact form)
-
-## How to Run
-
-1. Download all 3 files into the same folder
-2. Open `index.html` in your browser
-3. That's it — no install, no build tools needed
-
-## Contact Form Setup
-
-The contact form uses [Formspree](https://formspree.io). To connect it to your own email:
-
-1. Sign up at formspree.io
-2. Create a new form
-3. Replace the form action URL in `index.html`:
-
-```html
-<form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+```bash
+npm install
+npm run dev      # local dev
+npm run build    # type-check + production build → dist/
+npm run preview  # serve the production build
 ```
 
-4. Make sure inputs have name attributes:
+Deploy `dist/` anywhere static (GitHub Pages, Vercel, Cloudflare Pages).
+`base: './'` in `vite.config.ts` keeps asset paths working on project subpaths.
 
-```html
-<input type="text" name="name" />
-<input type="email" name="email" />
-<textarea name="message"></textarea>
+## Structure
+
+```
+src/
+├── data/portfolio.ts        # ALL content: projects, posts, journey, skills
+├── lib/anim.ts              # shared entrance variants (rise + de-blur)
+├── lib/scroll.ts            # Lenis setup + anchor routing
+├── components/
+│   ├── chrome.tsx           # Cursor, Progress, Nav, SectionHead, Magnetic, Footer
+│   ├── Hero.tsx             # staggered title, dot field, ambient orb
+│   ├── Work.tsx             # WorkCard + tilting ProjectVisual
+│   └── Sections.tsx         # Marquee, About, Journey, Writing, Contact
+├── App.tsx
+├── main.tsx
+└── index.css                # design tokens + all styles
 ```
 
-## Fonts
+**To add a project**, append one object to `projects` in
+`src/data/portfolio.ts` — `visual` picks the preview
+(`aether` | `qr` | `pass` | `event`).
 
-Loaded from Google Fonts via CDN in the `<head>` of `index.html`:
+## Motion principles
 
-- **Syne** — headings and display text
-- **DM Mono** — body text, labels, code snippets
-
-## Customization
-
-All colors are CSS variables in `style.css`:
-
-```css
-:root {
-  --bg: #080808;
-  --accent: #e8ff57;
-  --accent2: #57ffe8;
-  --text: #f4f0e8;
-  --muted: #777770;
-}
-```
-
-Change `--accent` to any color to retheme the whole site instantly.
+- One easing everywhere (`--ease-out` expo-out), blur-fade entrances
+- Restrained by default: dot field + orb are pointer-only, tilt ≤ 6°
+- Everything respects `prefers-reduced-motion` (Lenis off, still design)
 
 ## Links
 
 - GitHub: https://github.com/midhun122
 - LinkedIn: https://www.linkedin.com/in/midhunsujithnair/
-- Email: midhunsujith42@gmail.com
-
-## License
-
-Feel free to use this as inspiration for your own portfolio. Built with passion and lots of Tea
-.
+- Blog: https://blog.inovuslabs.org/author/midhun/
