@@ -1,32 +1,31 @@
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import {
   motion,
+  useMotionValue,
   useMotionValueEvent,
   useReducedMotion,
-  useScroll,
-  useSpring,
   useTransform,
 } from "framer-motion";
 
-/* A scroll-drawn glowing thread flowing from one section into the next.
-   The curve is generated through fixed waypoints (Catmull-Rom), so the
-   anchor nodes and comet always sit exactly on the line. Line strokes use
-   non-scaling-stroke; nodes/comet are HTML so they stay perfectly round. */
+/* Scroll-drawn thread floating ABOVE the content (like the reference):
+   thin, pointer-transparent, always visible — it can never hide behind
+   panels because it never goes behind them. The bright head is part of the
+   line itself, so tip and trail share one computation. */
 
 type Pt = [number, number];
 
-// Waypoints in a 1000x1000 space: left → center → right → center → left…
-// Nodes sit ON pts[2], pts[4] and pts[6].
+// Enters off the left edge, cruises the middle band in wide gentle arcs,
+// exits off the right edge. Narrow swing = no sudden turns.
 const PTS: Pt[] = [
-  [80, -20],
-  [480, 120],
-  [900, 260],
-  [520, 400],
-  [110, 540],
-  [480, 680],
-  [900, 820],
-  [520, 950],
-  [150, 1020],
+  [-60, 130],
+  [350, 210],
+  [580, 300],
+  [620, 420],
+  [500, 520],
+  [420, 630],
+  [540, 730],
+  [620, 830],
+  [960, 975],
 ];
 const NODES = [
   { x: PTS[2][0], y: PTS[2][1] },
@@ -57,51 +56,67 @@ export function ThreadZone({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const coreRef = useRef<SVGPathElement>(null);
   const glowRef = useRef<SVGPathElement>(null);
-  const haloRef = useRef<SVGPathElement>(null);
   const headRef = useRef<SVGPathElement>(null);
   // Path lengths are constant (static geometry) — measure once, never per frame.
-  const lens = useRef<{ core: number; glow: number; halo: number; head: number } | null>(null);
+  const lens = useRef<{ core: number; glow: number; head: number } | null>(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 0.75", "end 0.55"],
-  });
-  // Tight spring: the line must track the scroll, not trail it.
-  const smooth = useSpring(scrollYProgress, { stiffness: 170, damping: 26 });
-  const n1 = useTransform(smooth, [0.06, 0.2], [0.15, 1]);
-  const n2 = useTransform(smooth, [0.4, 0.55], [0.15, 1]);
-  const n3 = useTransform(smooth, [0.74, 0.9], [0.15, 1]);
+  // Manual progress from a fresh rect every scroll frame — no cached
+  // measurements to go stale. The tip is pinned to the viewport CENTER, so
+  // it cannot run ahead of (or lag behind) the scroll at any speed: it IS
+  // the scroll position. Raw value drives the draw, no spring in between.
+  const raw = useMotionValue(0);
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const el = ref.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const trackTop = r.top + window.scrollY + 150;
+      const trackH = Math.max(1, r.height - 230);
+      raw.set(clamp01((window.scrollY + 0.5 * vh - trackTop) / trackH));
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", kick);
+    return () => {
+      window.removeEventListener("scroll", kick);
+      window.removeEventListener("resize", kick);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [raw]);
+  const n1 = useTransform(raw, [0.3, 0.42], [0.15, 1]);
+  const n2 = useTransform(raw, [0.45, 0.58], [0.15, 1]);
+  const n3 = useTransform(raw, [0.61, 0.74], [0.15, 1]);
   const nodeOp = [n1, n2, n3];
 
-  // Single cheap driver. The bright head is part of the line itself (last
-  // 1.2% of the same dash window), so tip and trail share one computation
-  // and can never disagree. Cached lengths, no layout reads, no filters.
-  useMotionValueEvent(smooth, "change", (v) => {
+  // Continuous draw from the path start; head fused to the tip.
+  useMotionValueEvent(raw, "change", (v) => {
     const t = clamp01(v);
     const core = coreRef.current;
     const glow = glowRef.current;
-    const halo = haloRef.current;
     const head = headRef.current;
-    if (!core || !glow || !halo || !head) return;
+    if (!core || !glow || !head) return;
     if (!lens.current) {
       lens.current = {
         core: core.getTotalLength(),
         glow: glow.getTotalLength(),
-        halo: halo.getTotalLength(),
         head: head.getTotalLength(),
       };
     }
-    // Trail window ending exactly at t; head window is the same window's tip.
     const seg = (el: SVGPathElement, len: number, frac: number) => {
       const vis = Math.min(len * frac, len * t);
       el.style.strokeDasharray = `${vis.toFixed(1)} ${len.toFixed(1)}`;
       el.style.strokeDashoffset = `${(len * t - vis).toFixed(1)}`;
     };
     const L = lens.current;
-    seg(core, L.core, 0.13);
-    seg(glow, L.glow, 0.13);
-    seg(halo, L.halo, 0.13);
-    seg(head, L.head, 0.012);
+    seg(core, L.core, 1);
+    seg(glow, L.glow, 1);
+    seg(head, L.head, 0.014);
   });
 
   if (reduce) return <>{children}</>;
@@ -114,44 +129,24 @@ export function ThreadZone({ children }: { children: ReactNode }) {
           viewBox="0 0 1000 1000"
           preserveAspectRatio="none"
         >
-          <defs>
-            <linearGradient id="threadGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#d9a648" stopOpacity="0" />
-              <stop offset="0.2" stopColor="#d9a648" stopOpacity="1" />
-              <stop offset="0.8" stopColor="#e9bd63" stopOpacity="1" />
-              <stop offset="1" stopColor="#d9a648" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          {/* Faint dotted route: always visible, zero animation cost. The bright
-              traveling segment (below) hugs the comet; nothing accumulates. */}
+          {/* Faint dotted route: always visible, zero animation cost. */}
           <path
             d={D}
             fill="none"
             stroke="#d9a648"
-            strokeOpacity="0.18"
+            strokeOpacity="0.16"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeDasharray="1 9"
             vectorEffect="non-scaling-stroke"
           />
           <path
-            ref={haloRef}
-            d={D}
-            fill="none"
-            stroke="url(#threadGrad)"
-            strokeWidth="8"
-            opacity="0.16"
-            strokeLinecap="round"
-            vectorEffect="non-scaling-stroke"
-            strokeDasharray="0 10000"
-          />
-          <path
             ref={glowRef}
             d={D}
             fill="none"
-            stroke="url(#threadGrad)"
-            strokeWidth="4.5"
-            opacity="0.32"
+            stroke="#d9a648"
+            strokeWidth="3.5"
+            opacity="0.3"
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
             strokeDasharray="0 10000"
@@ -160,8 +155,8 @@ export function ThreadZone({ children }: { children: ReactNode }) {
             ref={coreRef}
             d={D}
             fill="none"
-            stroke="url(#threadGrad)"
-            strokeWidth="2.5"
+            stroke="#e9bd63"
+            strokeWidth="1.5"
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
             strokeDasharray="0 10000"
@@ -171,7 +166,7 @@ export function ThreadZone({ children }: { children: ReactNode }) {
             d={D}
             fill="none"
             stroke="#f5d78e"
-            strokeWidth="5"
+            strokeWidth="4"
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
             strokeDasharray="0 10000"

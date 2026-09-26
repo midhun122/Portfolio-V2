@@ -142,11 +142,8 @@ const ICONS: Record<string, ReactNode> = {
 };
 
 const NAV = [
-  { id: "home", label: "Home", href: "#top" },
   { id: "work", label: "Work", href: "#work" },
   { id: "about", label: "About", href: "#about" },
-  { id: "experience", label: "Experience", href: "#experience" },
-  { id: "journey", label: "Journey", href: "#journey" },
   { id: "writing", label: "Writing", href: "#writing" },
   { id: "contact", label: "Contact", href: "#contact" },
 ];

@@ -4,7 +4,9 @@ let lenis: Lenis | null = null;
 
 export function initSmoothScroll(on: boolean): () => void {
   if (!on) return () => {};
-  lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+  // lerp 0.15: tight hand-tracking. Lower values feel floatier but make
+  // every scroll-driven effect (thread, parallax, progress) trail the hand.
+  lenis = new Lenis({ lerp: 0.15, smoothWheel: true });
   let raf = 0;
   const loop = (t: number) => {
     lenis?.raf(t);

@@ -229,10 +229,13 @@ export function Experience() {
   const smooth = useSpring(progress, { stiffness: 90, damping: 24 });
 
   // First card yields as the second slides over: shrinks + dims with scroll.
+  // Dimming is done with an opacity overlay rather than a `filter` animation —
+  // animating CSS filter forces a full repaint of the card every scroll tick,
+  // and this card is large (up to 480px tall, full content width), so that
+  // repaint cost scales with viewport size. Opacity is compositor-only.
   const shrink = useTransform(smooth, [0, 0.55], [1, 0.94]);
-  const dim = useTransform(smooth, [0, 0.55], ["brightness(1)", "brightness(0.55)"]);
+  const dimOpacity = useTransform(smooth, [0, 0.55], [0, 0.45]);
   const ghostY = useTransform(smooth, [0, 1], ["14%", "-14%"]);
-
   return (
     <section className="section xp-sec" id="experience" aria-label="Experience" ref={ref}>
       <GhostWord word="ROLES" progress={progress} />
@@ -258,7 +261,7 @@ export function Experience() {
             initial="hidden"
             whileInView="show"
             viewport={viewportOnce}
-            style={i === 0 ? { scale: shrink, filter: dim } : undefined}
+                        style={i === 0 ? { scale: shrink } : undefined}
             whileHover={{ y: -6 }}
             transition={{ type: "spring", stiffness: 240, damping: 22 }}
             data-cursor="view"
@@ -275,6 +278,9 @@ export function Experience() {
               <p className="xp-text">{r.text}</p>
               <p className="xp-tag">{XP_TAGS[i]}</p>
             </div>
+            {i === 0 && (
+              <motion.div className="xp-dim" style={{ opacity: dimOpacity }} aria-hidden="true" />
+            )}
           </motion.article>
         ))}
       </div>

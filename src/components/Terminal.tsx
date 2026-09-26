@@ -12,7 +12,7 @@ const BOOT: Line[] = [
   { cmd: "whoami" },
   { out: "midhun — frontend developer, bca student" },
   { cmd: "stack --current" },
-  { out: "react · typescript · tailwind · gemini · cloudflare" },
+  { out: "react · typescript · tailwind · node · cloudflare" },
   { cmd: "status" },
   { out: "● building aether + inoqr — open to work" },
 ];
@@ -29,7 +29,7 @@ function run(raw: string): { outs: string[]; clear?: boolean } {
       return { outs: ["midhun sujith nair — bca student, kerala in"] };
     case "stack":
     case "stack --current":
-      return { outs: ["react · typescript · tailwind · node · gemini · cloudflare"] };
+      return { outs: ["react · typescript · tailwind · node · cloudflare"] };
     case "status":
       return { outs: ["● available for work — inbox open"] };
     case "work":
