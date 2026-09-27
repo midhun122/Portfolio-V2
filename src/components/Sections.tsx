@@ -454,16 +454,19 @@ export function Contact() {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Capture the form NOW: React nullifies e.currentTarget once the
+    // synchronous dispatch ends, so touching it after an await throws.
+    const form = e.currentTarget;
     setState("sending");
     try {
       const res = await fetch(links.formspree, {
         method: "POST",
-        body: new FormData(e.currentTarget),
+        body: new FormData(form),
         headers: { Accept: "application/json" },
       });
       if (res.ok) {
         setState("sent");
-        e.currentTarget.reset();
+        form.reset();
       } else {
         // Server reachable but refused (spam filter, limits, inactive form…).
         // Status is logged so the cause can be looked up, not guessed.
