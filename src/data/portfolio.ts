@@ -31,20 +31,23 @@ export interface Role {
   text: string;
   // Concise takeaway derived strictly from `text` — no new claims.
   takeaway: string;
+  period: string;
 }
 
 export const roles: Role[] = [
   {
     org: "Edunet Foundation",
     role: "AI Intern",
-    text: "Completed an AI-focused internship covering core AI concepts, with hands-on experience through guided learning and project-based tasks.",
-    takeaway: "Guided learning and project-based tasks around core AI concepts.",
+    text: "AICTE / IBM SkillsBuild program (remote) — instructor-led training in AI/ML concepts and model fundamentals, applied through practical assignments and a mentor-guided AI project.",
+    takeaway: "AI/ML fundamentals with a mentor-guided project.",
+    period: "Jul – Aug 2026",
   },
   {
     org: "Google",
     role: "Campus Ambassador",
-    text: "Promoted Google programs and opportunities on campus, connecting students with Google's learning and developer ecosystem.",
-    takeaway: "Connecting students with Google's learning and developer ecosystem.",
+    text: "Selected to represent Google Gemini on campus through the ambassador program, supporting student outreach and awareness of AI tools.",
+    takeaway: "Student outreach and awareness of AI tools on campus.",
+    period: "Apr – Jul 2026",
   },
 ];
 
@@ -186,7 +189,7 @@ export const capabilities: CapGroup[] = [
   {
     group: "Cloud / Tools",
     intent: "Shipping habits — versioned, deployed, repeatable.",
-    items: ["Git", "GitHub", "Vite", "Vercel", "GitHub Pages"],
+    items: ["Git", "GitHub", "Vite", "Vercel", "GitHub Pages", "VS Code", "Figma"],
   },
   {
     group: "Exploring",

@@ -272,6 +272,7 @@ export function Experience() {
                     {r.org.charAt(0)}
                   </span>
                   {r.org}
+                  <span className="xp-period">{r.period}</span>
                 </p>
               </div>
               <div className="xp-right">
@@ -370,6 +371,23 @@ export function Journey() {
         </motion.ol>
         </div>
       </div>
+      <motion.div
+        className="edu"
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={viewportOnce}
+      >
+        <p className="edu-label">Education</p>
+        <div className="edu-row">
+          <div>
+            <h4>BCA, Computer Applications</h4>
+            <p>Kristu Jyoti College of Management and Technology · Kerala, India</p>
+          </div>
+          <span>2025 – 2028 · expected</span>
+        </div>
+        <p className="edu-sub">Data Structures · Operating Systems · C · Web Development</p>
+      </motion.div>
     </section>
   );
 }
@@ -427,7 +445,7 @@ export function Writing() {
 }
 
 /* ── contact: form + elsewhere card ── */
-type FormState = "idle" | "sending" | "sent" | "error";
+type FormState = "idle" | "sending" | "sent" | "blocked" | "rejected";
 
 export function Contact() {
   const { ref, progress } = useGhost();
@@ -443,10 +461,20 @@ export function Contact() {
         body: new FormData(e.currentTarget),
         headers: { Accept: "application/json" },
       });
-      setState(res.ok ? "sent" : "error");
-      if (res.ok) e.currentTarget.reset();
-    } catch {
-      setState("error");
+      if (res.ok) {
+        setState("sent");
+        e.currentTarget.reset();
+      } else {
+        // Server reachable but refused (spam filter, limits, inactive form…).
+        // Status is logged so the cause can be looked up, not guessed.
+        console.warn(`Contact form rejected: HTTP ${res.status}`);
+        setState("rejected");
+      }
+    } catch (err) {
+      // Network-level failure: privacy shields / ad-blockers blocking the
+      // third-party POST are the usual cause (Brave Shields does this).
+      console.warn("Contact form unreachable:", err);
+      setState("blocked");
     }
   };
 
@@ -465,9 +493,11 @@ export function Contact() {
       ? "Sending — one moment…"
       : state === "sent"
         ? "Received. I'll get back to you soon."
-        : state === "error"
-          ? "Something hiccuped — try email instead."
-          : "";
+        : state === "blocked"
+          ? "Couldn't reach the form service — privacy shields or ad-blockers sometimes block it."
+          : state === "rejected"
+            ? "The form service refused the message — the reason is logged to the console."
+            : "";
 
   return (
     <section className="section contact" id="contact" aria-label="Contact" ref={ref}>
@@ -521,6 +551,12 @@ export function Contact() {
           </Magnetic>
           <p className="form-note" role="status" aria-live="polite">
             {note}
+            {(state === "blocked" || state === "rejected") && (
+              <>
+                {" "}
+                <a href={`mailto:${links.email}`}>Email me directly ↗</a>
+              </>
+            )}
           </p>
         </motion.form>
         <motion.div

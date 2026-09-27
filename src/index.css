@@ -512,6 +512,10 @@ a { color: inherit; }
   background: var(--accent-soft); border: 1px solid rgba(217, 166, 72, 0.35);
   color: var(--accent); font-family: var(--font-d); font-weight: 700; font-size: 14px;
 }
+.xp-period {
+  margin-left: auto; font-size: 11px; letter-spacing: 0.1em;
+  color: var(--faint); white-space: nowrap; padding-left: 1rem;
+}
 .xp-desc { color: var(--muted); font-size: 15.5px; max-width: 56ch; }
 .xp-take {
   margin-top: 1.1rem; padding-left: 1rem;
@@ -568,6 +572,14 @@ a { color: inherit; }
 .estate.is-next { color: var(--faint); }
 .entry-title { font-family: var(--font-d); font-weight: 600; font-size: clamp(1.25rem, 2.6vw, 1.6rem); letter-spacing: -0.015em; margin: 0.5rem 0; }
 .entry-text { color: var(--muted); font-size: 15px; max-width: 52ch; }
+/* education strip: compact, same language as the trail entries */
+.edu { margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1.75rem; }
+.edu-label { font-family: var(--font-m); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+.edu-row { display: flex; justify-content: space-between; align-items: baseline; gap: 1.5rem; flex-wrap: wrap; }
+.edu-row h4 { font-family: var(--font-d); font-weight: 600; font-size: 17px; letter-spacing: -0.01em; }
+.edu-row p { font-size: 14px; color: var(--muted); margin-top: 2px; }
+.edu-row > span { font-family: var(--font-m); font-size: 11.5px; color: var(--faint); white-space: nowrap; }
+.edu-sub { font-size: 13.5px; color: var(--faint); margin-top: 0.6rem; }
 
 /* ══ WRITING ══ */
 .writing { background: var(--bg-2); border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }

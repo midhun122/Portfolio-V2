@@ -5,6 +5,16 @@ smooth scrolling, spring-physics motion throughout.
 
 ## Run
 
+## Deploy (Vercel)
+
+Vercel auto-detects this setup — no config file needed:
+
+1. Push the repo to GitHub (see below).
+2. Vercel → Add New → Project → import the repo.
+3. Framework preset: **Vite**. Build command `npm run build`,
+   output directory `dist`, install `npm install` — all defaults.
+4. Deploy. Every future `git push` to the connected branch redeploys.
+
 ```bash
 npm install
 npm run dev      # local dev

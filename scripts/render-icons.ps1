@@ -41,21 +41,22 @@ function New-Icon([int]$size, [string]$out) {
   $g.FillEllipse($sheen, 6, 2, 52, 22)
   $sheen.Dispose()
 
-  # monogram — same coordinates as favicon.svg
-  $pen = New-Object Drawing.Pen($INK, 4.2)
+  # monogram — same coordinates as favicon.svg (drawn bolder + wider dot
+  # gap so it stays legible down at 16px tab size)
+  $pen = New-Object Drawing.Pen($INK, 5)
   $pen.StartCap = 'Round'; $pen.EndCap = 'Round'; $pen.LineJoin = 'Round'
-  $g.DrawLine($pen, 12, 43, 12, 28)
-  $g.DrawArc($pen, 12, 27.5, 10, 15.5, 180, 180)
-  $g.DrawLine($pen, 22, 35, 22, 43)
-  $g.DrawArc($pen, 22, 27.5, 10, 15.5, 180, 180)
-  $g.DrawLine($pen, 32, 35, 32, 43)
-  $g.DrawLine($pen, 42, 43, 42, 28)
-  $g.DrawArc($pen, 42, 27.5, 10, 15.5, 180, 180)
-  $g.DrawLine($pen, 52, 35, 52, 43)
+  $g.DrawLine($pen, 11, 43, 11, 28)
+  $g.DrawArc($pen, 11, 27.5, 9.5, 15.5, 180, 180)
+  $g.DrawLine($pen, 20.5, 35, 20.5, 43)
+  $g.DrawArc($pen, 20.5, 27.5, 9.5, 15.5, 180, 180)
+  $g.DrawLine($pen, 30, 35, 30, 43)
+  $g.DrawLine($pen, 44, 43, 44, 28)
+  $g.DrawArc($pen, 44, 27.5, 10, 15.5, 180, 180)
+  $g.DrawLine($pen, 54, 35, 54, 43)
   $pen.Dispose()
 
   $dot = New-Object Drawing.SolidBrush($BRASS)
-  $g.FillEllipse($dot, 34.6, 38.1, 4.8, 4.8)
+  $g.FillEllipse($dot, 33.6, 37.6, 6.8, 6.8)
   $dot.Dispose()
 
   $g.Dispose()
