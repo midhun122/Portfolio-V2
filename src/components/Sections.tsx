@@ -129,8 +129,7 @@ export function About() {
           viewport={viewportOnce}
         >
           <p className="statement">
-            I care more about what I&apos;m building than the tools behind
-            it — and whether it&apos;s genuinely useful to someone.
+            I like building things that work, solve real problems, and are useful to someone.
           </p>
           <p>
             I&apos;m Midhun, a BCA student from Kerala who enjoys turning

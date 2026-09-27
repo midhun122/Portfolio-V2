@@ -203,7 +203,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
             >
-              I&apos;m Midhun — a BCA student and developer working mostly in
+              I&apos;m Midhun - a BCA student and developer working mostly in
               frontend, currently stretching into backend, AI, cloud, and small
               hardware experiments.
             </motion.p>
@@ -232,6 +232,9 @@ export default function Hero() {
                 aria-label="Download resume as PDF"
               >
                 Resume ↓
+              </a>
+              <a className="text-link" href={links.linkedin} target="_blank" rel="noopener">
+                LinkedIn ↗
               </a>
             </motion.div>
           </div>

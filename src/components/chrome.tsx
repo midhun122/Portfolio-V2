@@ -333,6 +333,9 @@ export function Footer() {
         <a href="https://github.com/midhun122" target="_blank" rel="noopener">
           GitHub
         </a>
+        <a href="https://www.linkedin.com/in/midhunsujithnair/" target="_blank" rel="noopener">
+          LinkedIn
+        </a>
         <button onClick={scrollToTop} type="button">
           Top ↑
         </button>
