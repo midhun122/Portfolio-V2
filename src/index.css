@@ -117,6 +117,8 @@ a { color: inherit; }
   transition: background 0.2s; white-space: nowrap; flex-shrink: 0;
 }
 .pill-cta:hover { background: var(--accent-hi); }
+/* Mobile twin: shown outside the scrollable pill so it can never slide away */
+.pill-cta-out { display: none; }
 
 /* ══ HERO ══ */
 .hero {
@@ -697,6 +699,16 @@ a.else-v:hover { color: var(--accent); }
 }
 @media (max-width: 640px) {
   body { font-size: 15px; }
+  .nav-float { align-items: center; gap: 8px; }
+  .pill { flex: 1 1 auto; min-width: 0; }
+  .pill .pill-cta { display: none; }
+  .pill-cta-out {
+    display: inline-flex; align-items: center; flex-shrink: 0;
+    font-family: var(--font-d); font-weight: 600; font-size: 12.5px;
+    background: var(--ink); color: #17130a; text-decoration: none;
+    padding: 9px 15px; border-radius: 999px; white-space: nowrap;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  }
   .hero { padding-top: 7rem; align-items: flex-start; }
   .hero-actions .btn-solid, .hero-actions .btn-line { flex: 1 1 auto; }
   .hero-meta { gap: 0.9rem 1.5rem; }

@@ -223,6 +223,9 @@ export function Nav() {
           Let&apos;s talk
         </a>
       </nav>
+      <a className="pill-cta-out" href="#contact">
+        Let&apos;s talk
+      </a>
     </motion.header>
   );
 }
