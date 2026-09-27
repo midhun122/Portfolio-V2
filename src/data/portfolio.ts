@@ -29,6 +29,8 @@ export interface Role {
   org: string;
   role: string;
   text: string;
+  // Concise takeaway derived strictly from `text` — no new claims.
+  takeaway: string;
 }
 
 export const roles: Role[] = [
@@ -36,11 +38,13 @@ export const roles: Role[] = [
     org: "Edunet Foundation",
     role: "AI Intern",
     text: "Completed an AI-focused internship covering core AI concepts, with hands-on experience through guided learning and project-based tasks.",
+    takeaway: "Guided learning and project-based tasks around core AI concepts.",
   },
   {
     org: "Google",
     role: "Campus Ambassador",
     text: "Promoted Google programs and opportunities on campus, connecting students with Google's learning and developer ecosystem.",
+    takeaway: "Connecting students with Google's learning and developer ecosystem.",
   },
 ];
 
@@ -210,4 +214,8 @@ export const links = {
   blog: "https://blog.inovuslabs.org/author/midhun/",
   email: "midhunsujith42@gmail.com",
   formspree: "https://formspree.io/f/mjgaepkk",
+  // Static asset: place the file at public/Midhun_Sujith_Nair_Resume.pdf
+  // (it ships to dist/ on build; update by replacing that file).
+  resume: "./Midhun_Sujith_Nair_Resume.pdf",
+  resumeFilename: "Midhun_Sujith_Nair_Resume.pdf",
 };

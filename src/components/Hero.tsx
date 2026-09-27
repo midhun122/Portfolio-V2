@@ -225,6 +225,14 @@ export default function Hero() {
               <a className="text-link" href={links.github} target="_blank" rel="noopener">
                 GitHub ↗
               </a>
+              <a
+                className="text-link"
+                href={links.resume}
+                download={links.resumeFilename}
+                aria-label="Download resume as PDF"
+              >
+                Resume ↓
+              </a>
             </motion.div>
           </div>
 

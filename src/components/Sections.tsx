@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, type FormEvent, type ReactNode } from "react";
-import { animate, motion, useInView, useScroll, useSpring, useTransform } from "framer-motion";
+import { animate, motion, useInView, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
 import {
   capabilities,
   journey,
@@ -9,7 +9,9 @@ import {
   roles,
 } from "../data/portfolio";
 import { GhostWord, Magnetic, SectionHead } from "./chrome";
-import { fadeUp, slideIn, slideInL, stagger, viewportOnce } from "../lib/anim";
+import { fadeUp, slideIn, stagger, viewportOnce } from "../lib/anim";
+
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 /* ── stack ticker ── */
 export function Marquee() {
@@ -221,24 +223,14 @@ export function About() {
   );
 }
 
-/* ── experience: sticky-stacking role cards ── */
-const XP_TAGS = ["Internship", "Campus program"];
+/* ── experience: editorial rows, calm foreground ── */
 
 export function Experience() {
   const { ref, progress } = useGhost();
   const smooth = useSpring(progress, { stiffness: 90, damping: 24 });
-
-  // First card yields as the second slides over: shrinks + dims with scroll.
-  // Dimming is done with an opacity overlay rather than a `filter` animation —
-  // animating CSS filter forces a full repaint of the card every scroll tick,
-  // and this card is large (up to 480px tall, full content width), so that
-  // repaint cost scales with viewport size. Opacity is compositor-only.
-  const shrink = useTransform(smooth, [0, 0.55], [1, 0.94]);
-  const dimOpacity = useTransform(smooth, [0, 0.55], [0, 0.45]);
-  const ghostY = useTransform(smooth, [0, 1], ["14%", "-14%"]);
   return (
     <section className="section xp-sec" id="experience" aria-label="Experience" ref={ref}>
-      <GhostWord word="ROLES" progress={progress} />
+      <GhostWord word="EXPERIENCE" progress={progress} solid />
       <SectionHead
         index="03"
         label="Experience"
@@ -252,45 +244,88 @@ export function Experience() {
       <div className="xp-progress" aria-hidden="true">
         <motion.div style={{ scaleX: smooth }} />
       </div>
-      <div className="exp-stack">
+      <motion.ol
+        className="xp-rows"
+        variants={stagger}
+        initial="hidden"
+        whileInView="show"
+        viewport={viewportOnce}
+      >
         {roles.map((r, i) => (
-          <motion.article
-            key={r.role}
-            className="xp-card"
-            variants={i === 0 ? slideIn : slideInL}
-            initial="hidden"
-            whileInView="show"
-            viewport={viewportOnce}
-                        style={i === 0 ? { scale: shrink } : undefined}
-            whileHover={{ y: -6 }}
-            transition={{ type: "spring", stiffness: 240, damping: 22 }}
-            data-cursor="view"
-          >
-            <motion.span className="xp-ghostnum" style={{ y: ghostY }} aria-hidden="true">
-              0{i + 1}
-            </motion.span>
-            <div className="xp-main">
-              <span className="xp-mono" aria-hidden="true">
-                {r.org.charAt(0)}
-              </span>
-              <p className="xp-org">{r.org}</p>
-              <h3 className="xp-title">{r.role}</h3>
-              <p className="xp-text">{r.text}</p>
-              <p className="xp-tag">{XP_TAGS[i]}</p>
+          <motion.li className="xp-row" key={r.role} variants={fadeUp}>
+            <motion.span
+              className="xp-rule"
+              aria-hidden="true"
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={viewportOnce}
+              transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+            />
+            <div className="xp-row-in">
+              <div className="xp-left">
+                <h3 className="xp-role">
+                  <sup aria-hidden="true">0{i + 1}</sup>
+                  {r.role}
+                </h3>
+                <p className="xp-co">
+                  <span className="xp-chip" aria-hidden="true">
+                    {r.org.charAt(0)}
+                  </span>
+                  {r.org}
+                </p>
+              </div>
+              <div className="xp-right">
+                <p className="xp-desc">{r.text}</p>
+                <p className="xp-take">{r.takeaway}</p>
+              </div>
             </div>
-            {i === 0 && (
-              <motion.div className="xp-dim" style={{ opacity: dimOpacity }} aria-hidden="true" />
+            {i === roles.length - 1 && (
+              <motion.span
+                className="xp-rule end"
+                aria-hidden="true"
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={viewportOnce}
+                transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
+              />
             )}
-          </motion.article>
+          </motion.li>
         ))}
-      </div>
+      </motion.ol>
     </section>
   );
 }
 
-/* ── journey: sticky header, scrolling entries ── */
+/* ── journey: sticky header, scrolling entries + timeline spine ── */
 export function Journey() {
   const { ref, progress } = useGhost();
+  // Straight skeleton spine: fill + head share one hand-measured value,
+  // so they cannot disagree. Follows the same manual-progress pattern.
+  const listRef = useRef<HTMLOListElement>(null);
+  const spine = useMotionValue(0);
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const el = listRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      spine.set(clamp01((0.8 * vh - r.top) / (r.height + 0.25 * vh)));
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", kick);
+    return () => {
+      window.removeEventListener("scroll", kick);
+      window.removeEventListener("resize", kick);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [spine]);
+  const headTop = useTransform(spine, [0, 1], ["0%", "100%"]);
   return (
     <section className="section journey-sec" id="journey" aria-label="Journey" ref={ref}>
       <GhostWord word="PATH" progress={progress} />
@@ -307,8 +342,14 @@ export function Journey() {
             note="The learning trail behind the roles."
           />
         </div>
+        <div className="entries-wrap">
+          <div className="spine" aria-hidden="true">
+            <motion.div className="spine-fill" style={{ scaleY: spine }} />
+            <motion.div className="spine-head" style={{ top: headTop }} />
+          </div>
         <motion.ol
           className="entries"
+          ref={listRef}
           variants={stagger}
           initial="hidden"
           whileInView="show"
@@ -327,6 +368,7 @@ export function Journey() {
             </motion.li>
           ))}
         </motion.ol>
+        </div>
       </div>
     </section>
   );

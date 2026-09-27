@@ -8,6 +8,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { scrollToTop } from "../lib/scroll";
+import { links } from "../data/portfolio";
 import { fadeUp, viewportOnce } from "../lib/anim";
 
 /* ── scroll progress bar ── */
@@ -139,13 +140,20 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M4.8 11.4c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4" strokeLinecap="round" />
     </svg>
   ),
+  resume: (
+    <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+      <rect x="3" y="1.5" width="10" height="13" rx="2" />
+      <path d="M8 5.5v5M6 8.7l2 2 2-2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
 };
 
-const NAV = [
+const NAV: { id: string; label: string; href: string; external?: boolean }[] = [
   { id: "work", label: "Work", href: "#work" },
   { id: "about", label: "About", href: "#about" },
   { id: "writing", label: "Writing", href: "#writing" },
   { id: "contact", label: "Contact", href: "#contact" },
+  { id: "resume", label: "Resume", href: links.resume, external: true },
 ];
 
 export function Nav() {
@@ -186,17 +194,31 @@ export function Nav() {
           m<span>.</span>n
         </a>
         <span className="pill-div" aria-hidden="true" />
-        {NAV.map((n) => (
-          <a
-            key={n.id}
-            href={n.href}
-            className={`pill-link${active === n.id ? " active" : ""}`}
-            aria-current={active === n.id ? "true" : undefined}
-          >
-            {ICONS[n.id]}
-            <span>{n.label}</span>
-          </a>
-        ))}
+        {NAV.map((n) =>
+          n.external ? (
+            <a
+              key={n.id}
+              href={n.href}
+              className="pill-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${n.label} (opens PDF in a new tab)`}
+            >
+              {ICONS[n.id]}
+              <span>{n.label}</span>
+            </a>
+          ) : (
+            <a
+              key={n.id}
+              href={n.href}
+              className={`pill-link${active === n.id ? " active" : ""}`}
+              aria-current={active === n.id ? "true" : undefined}
+            >
+              {ICONS[n.id]}
+              <span>{n.label}</span>
+            </a>
+          )
+        )}
         <a className="pill-cta" href="#contact">
           Let&apos;s talk
         </a>
@@ -205,12 +227,19 @@ export function Nav() {
   );
 }
 
-/* ── giant ghost word with scroll parallax ── */
-export function GhostWord({ word, progress }: { word: string; progress: MotionValue<number> }) {
-  const x = useTransform(progress, [0, 1], ["4%", "-8%"]);
+/* ── architectural ghost typography ──
+   Default (outline) preserves the legacy treatment for sections not yet
+   migrated. `solid` is the new system: mass-filled quiet type, restrained
+   drift, edge fades. */
+export function GhostWord({ word, progress, solid = false }: { word: string; progress: MotionValue<number>; solid?: boolean }) {
+  const xWide = useTransform(progress, [0, 1], ["4%", "-8%"]);
+  const xCalm = useTransform(progress, [0, 1], [30, -30]);
+  const fade = useTransform(progress, [0, 0.18, 0.82, 1], [0, 1, 1, 0]);
   return (
-    <div className="ghost" aria-hidden="true">
-      <motion.span style={{ x }}>{word}</motion.span>
+    <div className={`ghost${solid ? " solid" : ""}`} aria-hidden="true">
+      <motion.span style={solid ? { x: xCalm, opacity: fade } : { x: xWide }}>
+        {word}
+      </motion.span>
     </div>
   );
 }

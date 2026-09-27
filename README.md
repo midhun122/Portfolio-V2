@@ -36,6 +36,10 @@ src/
 `src/data/portfolio.ts` — `visual` picks the preview
 (`aether` | `qr` | `pass` | `event`).
 
+**Resume:** drop the PDF at `public/Midhun_Sujith_Nair_Resume.pdf`
+(nav opens it in a new tab, hero downloads it). Rebuild/redeploy after
+replacing the file; commit it — `dist/` is gitignored, `public/` is not.
+
 ## Motion principles
 
 - One easing everywhere (`--ease-out` expo-out), blur-fade entrances
